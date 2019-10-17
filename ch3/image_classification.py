@@ -14,7 +14,7 @@ from torchvision.datasets import ImageFolder
 is_cuda = False
 device = None
 if torch.cuda.is_available():
-    is_cuda = False
+    is_cuda = True
     count = torch.cuda.device_count()
     device = torch.device(count - 1)  # last gpu
 
