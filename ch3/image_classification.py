@@ -1,3 +1,4 @@
+import sys
 import pdb
 import time
 import torch
@@ -90,8 +91,10 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
             # Iterate over data
             for i, data in enumerate(dataloaders[phase]):
-                #pdb.set_trace()
-                print('\rNo.{}'.format(i), end='')
+                # pdb.set_trace()
+                print('\rTraining({})'.format(i), end='')
+                print('{:20s}'.format('.' * (i % 20)), end='', flush=True)
+
                 # get inputs
                 inputs, labels = data
                 if is_cuda:
@@ -114,11 +117,11 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
                 # statistics
                 running_loss += loss.item()
-                running_corrects += torch.sum(preds == labels)
+                running_corrects += torch.sum(preds == labels).item()
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects / dataset_sizes[phase]
-            print('\n{} -- Loss: {:.4f}, Acc: {.4f}\n'.format(phase, epoch_loss, epoch_acc))
+            print('\n{} -- Loss: {:.4f}, Acc: {:.4f}\n'.format(phase, epoch_loss, epoch_acc))
 
             # deep copy the model
             if phase == 'valid' and epoch_acc > best_acc:
