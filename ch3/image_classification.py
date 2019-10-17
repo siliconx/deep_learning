@@ -15,8 +15,10 @@ import time
 is_cuda = False
 if torch.cuda.is_available():
     is_cuda = True
+    count = torch.cuda.device_count()
+    device = torch.device(count - 1)  # last gpu
 
-# 显示图片
+# show image
 def imshow(inp):
     """Imshow for Tensor."""
     inp = inp.numpy().transpose((1, 2, 0))
@@ -57,7 +59,7 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, 2)
 print('resnet18 model:', model)
 if is_cuda:
-    model = model.cuda()
+    model = model.to(device)
 
 # Loss & Optimizer
 learning_rate = 0.001
@@ -93,8 +95,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 # get inputs
                 inputs, labels = data
                 if is_cuda:
-                    inputs = inputs.cuda()
-                    labels = labels.cuda()
+                    inputs = inputs.to(device)
+                    labels = labels.to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
