@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 is_cuda = False
 device = 'cpu'
 if torch.cuda.is_available():
-    is_cuda = False
+    is_cuda = True
     count = torch.cuda.device_count()
     device = torch.device(count - 1)
 
@@ -98,8 +98,9 @@ def fit(epoch, model, data_loader, phase='training', volatile=True):
     loss = running_loss / len(data_loader.dataset)
     accuracy = (100.0 * running_correct.item()) / len(data_loader.dataset)
 
-    print(f'{epoch}: {phase} loss is {loss:{5}.{4}} and accuracy is '
-          f'{running_correct.item()} / {len(data_loader.dataset)}{accuracy:{10}.{4}}')
+    print('{}: {} loss is {:5.4f} and accuracy is {}/{} {:10.4f}'.format(
+        epoch, phase, loss, running_correct.item(),
+        len(data_loader.dataset), accuracy))
     return loss, accuracy
 
 train_losses, train_accuracy = [], []
@@ -112,11 +113,11 @@ for epoch in range(1, 10):
     val_losses.append(val_epoch_loss)
     val_accuracy.append(val_epoch_accuracy)
 
-plt.plot(range(1,len(train_losses)+1),train_losses,'bo',label = 'training loss')
-plt.plot(range(1,len(val_losses)+1),val_losses,'r',label = 'validation loss')
+plt.plot(range(1, len(train_losses)+1),train_losses,'bo',label = 'training loss')
+plt.plot(range(1, len(val_losses)+1),val_losses,'r',label = 'validation loss')
 plt.legend()
 
-plt.plot(range(1,len(train_accuracy)+1),train_accuracy,'bo',label = 'train accuracy')
-plt.plot(range(1,len(val_accuracy)+1),val_accuracy,'r',label = 'val accuracy')
+plt.plot(range(1, len(train_accuracy)+1),train_accuracy,'bo',label = 'train accuracy')
+plt.plot(range(1, len(val_accuracy)+1),val_accuracy,'r',label = 'val accuracy')
 plt.legend()
 
