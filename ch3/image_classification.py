@@ -89,9 +89,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             running_loss = 0.0
             running_corrects = 0
 
-            # Iterate over data
+            # Iterate over batch data
             for i, data in enumerate(dataloaders[phase]):
-                # pdb.set_trace()
+                # progress bar
                 print('\rTraining({})'.format(i), end='')
                 print('{:20s}'.format('.' * (i % 20)), end='', flush=True)
 
