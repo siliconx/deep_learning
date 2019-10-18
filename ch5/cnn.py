@@ -57,17 +57,18 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
 
 model = Net()
 if is_cuda:
     model = model.to(device)
 
 optimizer = optim.SGD(model.parameters(), lr=0.01)
-data, target = next(iter(train_loader))
-output = model(data.to(device))
-print('output.size:', output.size())
-print('target.size:', target.size())
+
+#data, target = next(iter(train_loader))
+#output = model(data.to(device))
+#print('output.size:', output.size())
+#print('target.size:', target.size())
 
 def fit(epoch, model, data_loader, phase='training', volatile=True):
     if phase == 'training':
@@ -87,18 +88,19 @@ def fit(epoch, model, data_loader, phase='training', volatile=True):
         output = model(data)
         loss = F.nll_loss(output, target)
 
-        running_loss += F.nll_loss(output, target, size_average=False).item()
+        running_loss += F.nll_loss(output, target, reduction='sum').item()
         preds = output.data.max(dim=1, keepdim=True)[1]
         running_correct += preds.eq(target.data.view_as(preds)).cpu().sum()
         if phase == 'training':
             loss.backward()
             optimizer.step()
 
-        loss = running_loss / len(data_loader.datasets)
-        accuracy = (100.0 * running_correct.item()) / len(data_loader.dataset)
+    loss = running_loss / len(data_loader.dataset)
+    accuracy = (100.0 * running_correct.item()) / len(data_loader.dataset)
 
-        print(f'{phase} loss is {loss:{5}.{4}} and accuracy is '
-                '{running_correct.item()} / {len(data_loader.dataset)} {accuracy:{10}.{4}}')
+    print(f'{epoch}: {phase} loss is {loss:{5}.{4}} and accuracy is '
+          f'{running_correct.item()} / {len(data_loader.dataset)}{accuracy:{10}.{4}}')
+    return loss, accuracy
 
 train_losses, train_accuracy = [], []
 val_losses, val_accuracy = [], []
